@@ -22,18 +22,32 @@ def size_img(img:np.ndarray)->tuple[int,int,int]:
     height,width,channels=img.shape
     return height,width,channels
 
-def plot_histogram(img:np.ndarray)->None:
-    '''
+def plot_histogram(img:np.ndarray)->dict:
+    """
     creating an image histogram
     :param img:an image in the form of a multidimensional array
-    '''
+    :return:A histogram dictionary for each color channel of the image.
+    """
+    histogram={}
     try:
         color=('b','g','r')
-        plt.figure()
         for i,col in enumerate(color):
             hist=cv2.calcHist([img],[i],None,[256],[0,256])
-            plt.plot(hist,color=col)
-            plt.xlim([0,256])
+            histogram[col]=hist.flatten()
+    except Exception as e:
+        raise RuntimeError(f'mistake:{e}')
+    return histogram
+
+def display_histogram(histogram:dict)->None:
+    """
+    display image histogram
+    :param histogram: A histogram dictionary for each color channel of the image.
+    """
+    try:
+        plt.figure()
+        for col in histogram.keys():
+            plt.plot(histogram[col], color=col)
+        plt.xlim([0, 256])
         plt.title("image histogram")
         plt.xlabel('Pixel Intensity')
         plt.ylabel('Number of pixels')
